@@ -1,0 +1,56 @@
+[
+    {
+        "name": "Eren Yeager",
+        "show": "Attack on Titan",
+        "initial_age": 10,
+        "final_age": 19,
+        "skin_color": "white",
+        "hair_color": "brown",
+        "sex": "Male"
+    },
+    {
+        "name": "Armin Arlert",
+        "show": "Attack on Titan",
+        "initial_age": 10,
+        "final_age": 19,
+        "skin_color": "white",
+        "hair_color": "blond",
+        "sex": "Male"
+    },
+    {
+        "name": "Mikasa Ackerman",
+        "show": "Attack on Titan",
+        "initial_age": 10,
+        "final_age": 19,
+        "skin_color": "white",
+        "hair_color": "black",
+        "sex": "Female"
+    },
+    {
+        "name": "Onyankopon",
+        "show": "Attack on Titan",
+        "initial_age": null,
+        "final_age": null,
+        "skin_color": "black",
+        "hair_color": "black",
+        "sex": "Male"
+    },
+    {
+        "name": "Grisha Yeager",
+        "show": "Attack on Titan",
+        "initial_age": 39,
+        "final_age": 39,
+        "skin_color": "white",
+        "hair_color": "black",
+        "sex": "Male"
+    },
+    {
+        "name": "Riko",
+        "show": "Made in Abyss",
+        "initial_age": 12,
+        "final_age": 12,
+        "skin_color": "white",
+        "hair_color": "blond",
+        "sex": "Female"
+    }
+]
