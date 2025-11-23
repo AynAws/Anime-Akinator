@@ -3,7 +3,13 @@ window.app = Vue.createApp({
         return { // app-scope variables
             characters: [],
             originalCharacters: [],
-            current: []
+            current: [],
+            askedProps: new Set(),
+            ignoredProps: new Set([
+                "name",
+                "english_voice_actor",
+                "japanese_voice_actor"
+            ])
         }
     },
     mounted() { // on load, run...
@@ -21,8 +27,18 @@ window.app = Vue.createApp({
 
             return prop.filter(prop => {
                 if (prop === "name") return false
-                const values = new Set(items.map(i => i[prop])) // values is a list of all remaining keys without duplicates
-                return values.size > 1 // returns whether the key is useful or not
+
+                const set = new Set()
+
+                for (const item of items) {
+                    const v = item[prop]
+                    if (Array.isArray(v)) {
+                        v.forEach(x => set.add(x))
+                    } else {
+                        set.add(v)
+                    }
+                }
+                return set.size > 1
             })
         },
         chooseBestProperty(items) { // chooses the best property for the next question
@@ -34,43 +50,82 @@ window.app = Vue.createApp({
             let bestDiff = total
 
             for (const p of prop) {
-                const values = [...new Set(items.map(i => i[p]))]
-                let bestPropDiff = total
-
-                for (const value of values) {
-                    const count = items.filter(item => item[p] === value).length
-                    const diff = Math.abs(total / 2 - count)
-                    if (diff < bestPropDiff) bestPropDiff = diff
+                const values = new Set()
+                for (const item of items) {
+                    const v = item[p]
+                    if (Array.isArray(v)) v.forEach(x => values.add(x))
+                    else values.add(v)
                 }
 
-                if (bestPropDiff < bestDiff) {
-                    bestDiff = bestPropDiff
+                let propBest = total
+
+                for (const value of values) {
+                    let count = 0
+                    for (const item of items) {
+                        const v = item[p]
+                        if (Array.isArray(v)) {
+                            if (v.includes(value)) count++
+                        } else if (v === value) {
+                            count++
+                        }
+                    }
+                    const diff = Math.abs(total / 2 - count)
+                    if (diff < propBest) propBest = diff
+                }
+
+                if (propBest < bestDiff) {
+                    bestDiff = propBest
                     bestProp = p
                 }
             }
             return bestProp
         },
-        getCandidateValue(items, prop) { // picks most effective value to ask about
-            const values = [...new Set(items.map(i => i[prop]))]
-            if (values.length === 0) return null
+        getCandidateValue(items, prop) {
+            const values = new Set()
+
+            for (const item of items) {
+                const v = item[prop]
+                if (Array.isArray(v)) v.forEach(x => values.add(x))
+                else values.add(v)
+            }
+
+            const list = [...values]
+            if (list.length === 0) return null
+
             const total = items.length
-            let bestValue = values[0] // bestValue equals names
-            let bestDiff = total // bestDiff is high so that names are always swapped out unless there aren't other options
-            for (const value of values) {
-                const count = items.filter(item => item[prop] === value).length
+            let bestValue = list[0]
+            let bestDiff = total
+
+            for (const value of list) {
+                let count = 0
+                for (const item of items) {
+                    const v = item[prop]
+                    if (Array.isArray(v) && v.includes(value)) count++
+                    else if (v === value) count++
+                }
+
                 const diff = Math.abs(total / 2 - count)
                 if (diff < bestDiff) {
                     bestDiff = diff
                     bestValue = value
                 }
             }
+
             return bestValue
         },
         applyAnswer(prop, value, answer) {
             if (answer) {
-                this.characters = this.characters.filter(item => item[prop] === value)
+                this.characters = this.characters.filter(item => {
+                    const v = item[prop]
+                    if (Array.isArray(v)) return v.includes(value)
+                    return v === value
+                })
             } else {
-                this.characters = this.characters.filter(item => item[prop] !== value)
+                this.characters = this.characters.filter(item => {
+                    const v = item[prop]
+                    if (Array.isArray(v)) return !v.includes(value)
+                    return v !== value
+                })
             }
         },
         askNextQuestion() {
