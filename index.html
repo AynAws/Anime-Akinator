@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Anime Over/Under</title>
+        <title>Anime Akinator</title>
         <!--FAVICON-->
         <link 
             rel="icon" 
@@ -36,12 +36,11 @@
                 <h2>{{ current[0] }}</h2>
                 <!-- Options -->
                 <div class="options">
-                    <button
-                        v-for="opt in current[1]"
-                        :key="opt"
-                        @click="choose(opt)"
-                    >
-                        {{ opt }}
+                    <button @click="choose(true)">
+                        Yes
+                    </button>
+                    <button @click="choose(false)">
+                        No
                     </button>
                 </div>
             </div>
